@@ -16,8 +16,8 @@ export class TaskController {
 
   //! http:localhost:3000/api/task
   @Get()
-  public getAllTasks(): string {
-    return this.taskSvc.getAllTasks();
+  async getAllTasks(): Promise<any[]> {
+    return await this.taskSvc.getAllTasks();
   }
 
   //! http:localhost:3000/api/task/1
