@@ -39,10 +39,16 @@ export class TaskService {
     return task;
   }
 
-  public async deleteTasks(id: number): Promise<boolean> {
-    const query = `DELETE FROM tasks WHERE id = ${id}`;
-    const results = await this.pg.query(query);
-    
-    return (results.rowCount ?? 0) > 0;
+  public async deleteTask(id: number): Promise<Task> {
+    const task = await this.prisma.task.delete({
+      where: {id}
+    });
+    return task;
   }
+  // public async deleteTasks(id: number): Promise<boolean> {
+  //   const query = `DELETE FROM tasks WHERE id = ${id}`;
+  //   const results = await this.pg.query(query);
+    
+  //   return (results.rowCount ?? 0) > 0;
+  // }
 }

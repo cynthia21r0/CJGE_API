@@ -1,0 +1,53 @@
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { UserService } from './user.service';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from './entities/user.entity';
+
+@Controller('/api/user')
+export class UserController {
+    constructor(private usersSvc: UserService) {}
+
+    @Get()
+    public async getAllUsers(): Promise<User[]> {
+        return await this.usersSvc.getAllUsers();
+    }
+    
+    @Get(':id')
+    public async getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
+        const result = await this.usersSvc.getUserById(id);
+        if(result == undefined)
+            throw new HttpException(`Usuario con ID ${id} no encontrado`, HttpStatus.NOT_FOUND);
+        
+        return result;
+    }
+
+    @Post('')
+    public async insertUser(@Body() user: CreateUserDto): Promise<User> {
+        const result = this.usersSvc.insertUser(user);
+
+        if (!result) {
+            throw new HttpException(
+                'Error al insertar el usuario',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
+
+        return result;
+    }
+
+    @Put(':id')
+    public async updateUser(@Param('id', ParseIntPipe) id: number, @Body() user: UpdateUserDto): Promise<User> {
+        return await this.usersSvc.updateUser(id, user);
+    }
+
+    @Delete(':id')
+    public async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<Boolean> {
+        try {
+            await this.usersSvc.deleteUser(id);
+        } catch (error) {
+            throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
+        }
+        return true;
+    }
+}
