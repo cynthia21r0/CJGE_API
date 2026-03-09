@@ -3,10 +3,12 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { UtilService } from 'src/common/service/util/util.service';
 
 @Controller('/api/user')
 export class UserController {
-    constructor(private usersSvc: UserService) {}
+    constructor(private usersSvc: UserService,
+                private utilSvs: UtilService) {}
 
     @Get()
     public async getAllUsers(): Promise<User[]> {
@@ -24,15 +26,19 @@ export class UserController {
 
     @Post('')
     public async insertUser(@Body() user: CreateUserDto): Promise<User> {
+        //Verificación del nombre de usuario
+        const currentUser = await this.usersSvc.getUserByUsername(user.username);
+        if(currentUser)
+            throw new HttpException('Nombre de usuario ya existe', HttpStatus.CONFLICT);
+
+        //Se inserta la información
+        const encryptedPassword = await this.utilSvs.hashPassword(user.password);
+        user.password = encryptedPassword;
         const result = this.usersSvc.insertUser(user);
-
-        if (!result) {
-            throw new HttpException(
-                'Error al insertar el usuario',
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            );
+        
+        if(!result) {
+            throw new HttpException('Error al insertar el usuario', HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
         return result;
     }
 
