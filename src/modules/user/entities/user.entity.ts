@@ -5,6 +5,7 @@ export class User {
   name: string;
   lastname: string;
   username: string;
+  refreshToken: string|null;
   password: string;
   created_at: Date;
   task ?: Task[];

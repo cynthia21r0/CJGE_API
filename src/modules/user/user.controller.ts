@@ -2,8 +2,10 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseI
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+//import { User } from './entities/user.entity';
+import { User } from 'generated/prisma/client';
 import { UtilService } from 'src/common/service/util/util.service';
+
 
 @Controller('/api/user')
 export class UserController {

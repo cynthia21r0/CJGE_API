@@ -8,7 +8,7 @@ import { User } from 'generated/prisma/client';
 @Injectable()
 export class UserService {
   constructor(
-    @Inject('POSTGRES_CONNECTION') private pg: Client,
+    // @Inject('POSTGRES_CONNECTION') private pg: Client,
     private prisma: PrismaService,
   ) {}
 
@@ -22,6 +22,7 @@ export class UserService {
         username: true,
         password: true,
         created_at: true,
+        refreshToken: true,
       },
     });
     return users;

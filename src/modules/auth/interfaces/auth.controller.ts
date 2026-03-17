@@ -1,6 +1,9 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode,HttpException, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from '../dto/login.dto';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { User } from 'src/modules/user/entities/user.entity';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -10,19 +13,26 @@ export class AuthController {
 
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  public login(@Body() loginDto:LoginDto): string {
-    const { username, password } = loginDto;
+  public async login(@Body() user:LoginDto): Promise<User> {
+    const { username, password } = user;
 
     // TODO: Verificar el usuario y contraseña
 
     // TODO: Obtener la informacion del usuario() payload
+    const result = await this.authSvc.login(user);
 
     // TODO: Generar el JWT
+    if (result == undefined || result == null) {
+        throw new HttpException(
+            `Usuario o contraseña incorrectos`,
+            HttpStatus.UNAUTHORIZED,
+        );
+    }
 
     // TODO: Devolver el JWT encriptado
+    return result;
+    }
 
-    return this.authSvc.login();
-  }
 
   @Get('/me')
   public getProfile() {
