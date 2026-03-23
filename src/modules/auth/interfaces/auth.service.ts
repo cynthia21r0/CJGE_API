@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { LoginDto } from '../dto/login.dto';
 import { User } from 'src/modules/user/entities/user.entity';
-import { UtilService } from 'src/common/service/util/util.service';
+import { UtilService } from 'src/common/service/util.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +12,12 @@ export class AuthService {
     private utilService: UtilService,
     private jwtService: JwtService
   ) {}
+
+  public async getUserByUserName(username: string): Promise <User | null> {
+    return await this.prisma.user.findFirst({
+      where: {username}
+    });
+  }
 
   async login(userLogin: LoginDto): Promise<User | null> {
 

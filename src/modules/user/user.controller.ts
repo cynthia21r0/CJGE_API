@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, UseGuards, HttpStatus, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 //import { User } from './entities/user.entity';
 import { User } from 'generated/prisma/client';
-import { UtilService } from 'src/common/service/util/util.service';
+import { UtilService } from 'src/common/service/util.service';
+import { AuthGuard } from 'src/common/guards/auth.guards';
 
 
 @Controller('/api/user')
+@UseGuards(AuthGuard)
 export class UserController {
     constructor(private usersSvc: UserService,
                 private utilSvs: UtilService) {}
