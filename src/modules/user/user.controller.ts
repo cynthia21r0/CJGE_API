@@ -36,7 +36,7 @@ export class UserController {
             throw new HttpException('Nombre de usuario ya existe', HttpStatus.CONFLICT);
 
         //Se inserta la información
-        const encryptedPassword = await this.utilSvs.hashPassword(user.password);
+        const encryptedPassword = await this.utilSvs.hash(user.password);
         user.password = encryptedPassword;
         const result = this.usersSvc.insertUser(user);
         

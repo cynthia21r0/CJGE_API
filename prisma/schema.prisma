@@ -14,7 +14,8 @@ model User {
   lastname   String   @db.VarChar(300)
   username   String   @db.VarChar(100)@unique
   password   String   @db.Text
-  refreshToken String?
+  //refreshToken String?
+  hash String?        @db.Text
   created_at DateTime @default(now())
   task       Task[]
 }

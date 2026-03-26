@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/common/services/prisma.service';
+import { PrismaService } from 'src/common/service/prisma.service';
 import { LoginDto } from '../dto/login.dto';
 import { User } from 'src/modules/user/entities/user.entity';
 import { UtilService } from 'src/common/service/util.service';
@@ -13,10 +13,23 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  public async getUserByUserName(username: string): Promise <User | null> {
+  public async getUserByUsername(username: string): Promise <User | null> {
     return await this.prisma.user.findFirst({
       where: {username}
     });
+  }
+
+  public async getUserById(id: number): Promise<User | null> {
+        return await this.prisma.user.findFirst({
+            where: { id }
+        });
+  }
+
+  public async updateHash(user_id: number, hash: string | null): Promise<User> {
+        return await this.prisma.user.update({
+            where: { id: user_id },
+            data: { hash }
+        })
   }
 
   async login(userLogin: LoginDto): Promise<User | null> {
@@ -45,7 +58,7 @@ export class AuthService {
       id: user.id,
       name: user.name,
       lastname: user.lastname,
-      created_At: user.created_at
+      created_at: user.created_at
     };
 
     // access token (60s)

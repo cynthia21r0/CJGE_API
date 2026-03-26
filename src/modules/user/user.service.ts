@@ -1,6 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Client } from 'pg';
-import { PrismaService } from 'src/common/services/prisma.service';
+import { PrismaService } from 'src/common/service/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from 'generated/prisma/client';
@@ -20,20 +20,30 @@ export class UserService {
         name: true,
         lastname: true,
         username: true,
-        password: true,
-        created_at: true,
-        refreshToken: true,
+        password: true, //deberia ser false
+        hash: true,
+        created_at: true
       },
     });
     return users;
   }
 
-  public async getUserById(id: number): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { id: id },
-    });
-    return user;
+  public async getUserById(id: number): Promise<User | null> { //el id: number cumple para el elemento parametrizado mas abajo
+        const user = await this.prisma.user.findUnique({
+            where: { id }, //elemento parametrizado si el parametro se llama igual al que se setea aqui se puede dejar como {id} nadamas
+            select: {
+                id: true,
+                name: true,
+                lastname: true,
+                username: true,
+                password: true, //debe de ser false
+                hash: true,
+                created_at: true
+            }
+        });
+        return user;
   }
+
   public async getUserByUsername(username: string): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
       where: { username: username },
@@ -41,25 +51,36 @@ export class UserService {
     return user;
   }
 
-  public async insertUser(user: CreateUserDto): Promise<User> {
-    const newUser = await this.prisma.user.create({
-      data: user,
-    });
-    return newUser;
-  }
-
   public async updateUser(id: number, userUpdated: UpdateUserDto): Promise<User> {
-    const user = await this.prisma.user.update({
-      where: { id },
-      data: userUpdated,
-    });
-    return user;
-  }
+        const user = await this.prisma.user.update({
+            where: { id },
+            data: userUpdated
+        });
+
+        return user;
+    }
+
+    public async insertUser(user: CreateUserDto): Promise<User> {
+        const newUser = await this.prisma.user.create({
+            data: user
+        });
+
+        return newUser;
+    }
 
     public async deleteUser(id: number): Promise<User> {
-    const user = await this.prisma.user.delete({
-      where: { id },
-    });
-    return user;
-  }
+        const user = await this.prisma.user.delete({
+            where: { id },
+            include: { task: true }
+        });
+
+        if (user?.task && user.task.length > 0) {
+            throw new BadRequestException(
+                'No se puede eliminar el usuario porque tiene tareas asignadas',
+            );
+        }
+
+        return await this.prisma.user.delete({ where: { id } });
+
+    }
 }
