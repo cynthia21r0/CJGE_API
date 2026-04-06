@@ -1,10 +1,13 @@
-import { Body,Controller, ForbiddenException, Get, HttpCode, HttpException, HttpStatus, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';import { AuthService } from './auth.service';
+import { Body, Controller, ForbiddenException, GatewayTimeoutException, Get, HttpCode, HttpStatus, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { AuthService } from './auth.service';
 import { LoginDto } from '../dto/login.dto';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import { User } from 'src/modules/user/entities/user.entity';
 import { ApiOperation } from '@nestjs/swagger';
 import { UtilService } from 'src/common/service/util.service';
 import { AuthGuard } from '@nestjs/passport';
+import { AppException } from "src/common/exceptions/app.exception";
+
 
 @Controller('/api/auth')
 export class AuthController {
@@ -63,7 +66,10 @@ export class AuthController {
     // Obtener el usuario en sesión
     const sessionUser = request['user'];
     const user = await this.authSvc.getUserById(sessionUser.id);
-    if(!user || !user.hash) throw new ForbiddenException('Acceso denegado')
+    // if(!user || !user.hash) throw new ForbiddenException('Acceso denegado')
+    if ( !user || !user.hash)
+            throw new AppException('Token invalido',HttpStatus.FORBIDDEN, '2'); //Excepcion personalizada 
+            //throw new ForbiddenException('Acceso Denegado');
 
     // Comparar el token resivido con el token guardado
     if (sessionUser.hash != user.hash) throw new ForbiddenException('Token invalido');

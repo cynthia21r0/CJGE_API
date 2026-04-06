@@ -18,6 +18,7 @@ model User {
   hash String?        @db.Text
   created_at DateTime @default(now())
   task       Task[]
+  logs       Logs[]
 }
 
 model Task {
@@ -28,6 +29,17 @@ model Task {
   user_id     Int
   created_at  DateTime @default(now())
   user        User     @relation(fields: [user_id], references: [id])
+}
+
+model Logs {
+  id          Int @default(autoincrement()) @id
+  statusCode  Int
+  timestamp   DateTime
+  path        String @db.Text()
+  error       String @db.Text()
+  errorCode   String @db.Text()
+  session_id  Int
+  user        User     @relation(fields: [session_id], references: [id])
 }
 
 //! Al hacer un cambio ejecutar: npx prisma generate
