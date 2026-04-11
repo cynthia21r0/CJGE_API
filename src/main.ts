@@ -6,6 +6,13 @@ import { AllExceptionfilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
+
   //Uso de pipes de forma global
   app.useGlobalPipes(
     new ValidationPipe({
@@ -14,7 +21,7 @@ async function bootstrap() {
   );
 
   //Uso de filtros globales
-  app.useGlobalFilters(new AllExceptionfilter)
+  app.useGlobalFilters(new AllExceptionfilter());
 
   //Configuración de SWAGGER
   const config = new DocumentBuilder()
