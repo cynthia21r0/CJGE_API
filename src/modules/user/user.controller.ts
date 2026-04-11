@@ -9,17 +9,18 @@ import { AuthGuard } from 'src/common/guards/auth.guards';
 
 
 @Controller('/api/user')
-@UseGuards(AuthGuard)
 export class UserController {
     constructor(private usersSvc: UserService,
                 private utilSvs: UtilService) {}
 
     @Get()
+    @UseGuards(AuthGuard)
     public async getAllUsers(): Promise<User[]> {
         return await this.usersSvc.getAllUsers();
     }
     
     @Get(':id')
+    @UseGuards(AuthGuard)
     public async getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
         const result = await this.usersSvc.getUserById(id);
         if(result == undefined)
@@ -47,11 +48,17 @@ export class UserController {
     }
 
     @Put(':id')
+    @UseGuards(AuthGuard)
     public async updateUser(@Param('id', ParseIntPipe) id: number, @Body() user: UpdateUserDto): Promise<User> {
+        if (user.password) {
+            const encryptedPassword = await this.utilSvs.hash(user.password);
+            user.password = encryptedPassword;
+        }
         return await this.usersSvc.updateUser(id, user);
     }
 
     @Delete(':id')
+    @UseGuards(AuthGuard)
     public async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<Boolean> {
         try {
             await this.usersSvc.deleteUser(id);

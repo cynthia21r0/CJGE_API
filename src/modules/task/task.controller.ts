@@ -10,6 +10,7 @@ import {
   HttpStatus,
   ParseIntPipe,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -24,8 +25,9 @@ export class TaskController {
 
   //! http:localhost:3000/api/task
   @Get()
-  public async getAllTasks(): Promise<Task[]> {
-    return await this.taskSvc.getAllTasks();
+  public async getAllTasks(@Req() req: any): Promise<Task[]> {
+    const userId = req.user.id; // Obtenemos el ID del usuario autenticado
+    return await this.taskSvc.getAllTasks(userId);
   }
 
   //! http:localhost:3000/api/task/1

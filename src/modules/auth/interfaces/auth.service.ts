@@ -58,12 +58,13 @@ export class AuthService {
       id: user.id,
       name: user.name,
       lastname: user.lastname,
+      username: user.username,
       created_at: user.created_at
     };
 
-    // access token (60s)
+    // access token (15m)
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '60s'
+      expiresIn: '15m'
     });
 
     // refresh token (7 días)

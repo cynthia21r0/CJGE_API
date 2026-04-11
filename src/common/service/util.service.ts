@@ -18,7 +18,7 @@ export class UtilService {
     }
 
     public async generateJWT(payload: any, expiresIn: any = '1h') {
-        return await this.jwtSvc.signAsync(payload, { 
+        return await this.jwtSvc.signAsync(payload, {
             expiresIn: expiresIn
         })
     }

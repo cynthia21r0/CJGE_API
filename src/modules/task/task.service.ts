@@ -9,8 +9,11 @@ import { PrismaService } from 'src/common/service/prisma.service';
 export class TaskService {
   constructor(private prisma: PrismaService) {}
 
-  public async getAllTasks(): Promise<Task[]> {
+  public async getAllTasks(userId: number): Promise<Task[]> {
     const task = await this.prisma.task.findMany({
+      where: {
+        user_id: userId // <-- Filtramos por el usuario dueño de las tareas
+      },
       orderBy:[{ name: "asc"}]
     });
 
