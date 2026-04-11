@@ -15,6 +15,8 @@ export class AllExceptionfilter implements ExceptionFilter {
 
         const message = exception instanceof HttpException ? exception.getResponse() : 'Internal Server Error';
 
+        console.error('❌ ERROR REAL ATRAPADO:', exception);
+        
         response.status(status).json({
             statusCode: status,
             timestamp: new Date().toISOString(),

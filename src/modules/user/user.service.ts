@@ -69,18 +69,26 @@ export class UserService {
     }
 
     public async deleteUser(id: number): Promise<User> {
-        const user = await this.prisma.user.delete({
-            where: { id },
-            include: { task: true }
+    // 1. Primero buscamos si el usuario tiene tareas sin borrarlo todavía
+    const userWithTasks = await this.prisma.user.findUnique({
+        where: { id },
+        include: { task: true }
+    });
+
+    if (!userWithTasks) {
+        throw new BadRequestException('El usuario no existe');
+    }
+
+    // 2. Verificamos la restricción de tareas
+    if (userWithTasks.task && userWithTasks.task.length > 0) {
+        throw new BadRequestException(
+            'No se puede eliminar el usuario porque tiene tareas asignadas',
+        );
+    }
+
+    // 3. Ahora que estamos seguros, borramos UNA SOLA VEZ
+    return await this.prisma.user.delete({
+        where: { id }
         });
-
-        if (user?.task && user.task.length > 0) {
-            throw new BadRequestException(
-                'No se puede eliminar el usuario porque tiene tareas asignadas',
-            );
-        }
-
-        return await this.prisma.user.delete({ where: { id } });
-
     }
 }

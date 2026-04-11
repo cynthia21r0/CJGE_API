@@ -38,7 +38,7 @@ export class UserController {
         //Se inserta la información
         const encryptedPassword = await this.utilSvs.hash(user.password);
         user.password = encryptedPassword;
-        const result = this.usersSvc.insertUser(user);
+        const result = await this.usersSvc.insertUser(user);
         
         if(!result) {
             throw new HttpException('Error al insertar el usuario', HttpStatus.INTERNAL_SERVER_ERROR);

@@ -9,13 +9,16 @@ import {
   HttpException,
   HttpStatus,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Task } from './entities/task.entity';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { AuthGuard } from 'src/common/guards/auth.guards';
 
 @Controller('/api/task')
+@UseGuards(AuthGuard)
 export class TaskController {
   constructor(private taskSvc: TaskService) {}
 
@@ -42,8 +45,8 @@ export class TaskController {
   }
 
   @Post('')
-  public insertTask(@Body() task: CreateTaskDto): Promise<Task> {
-    const result = this.taskSvc.insertTask(task);
+  public async insertTask(@Body() task: CreateTaskDto): Promise<Task> {
+    const result = await this.taskSvc.insertTask(task);
 
     if (!result) {
       throw new HttpException(

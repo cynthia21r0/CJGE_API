@@ -74,7 +74,7 @@ export class AuthService {
     // guardar refresh token
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { refreshToken }
+      data: { hash: refreshToken }
     });
 
     // agregar tokens al objeto usuario (opcional)

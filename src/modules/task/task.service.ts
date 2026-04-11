@@ -7,7 +7,7 @@ import { PrismaService } from 'src/common/service/prisma.service';
 
 @Injectable()
 export class TaskService {
-  constructor(@Inject('POSTGRES_CONNECTION') private pg: Client, private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
   public async getAllTasks(): Promise<Task[]> {
     const task = await this.prisma.task.findMany({

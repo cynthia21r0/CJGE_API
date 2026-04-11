@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { PrismaService } from 'src/common/service/prisma.service';
 import { UtilService } from 'src/common/service/util.service';
 import { JwtModule } from '@nestjs/jwt';
+import 'dotenv/config';
 
 @Module({
   imports: [ JwtModule.register({
